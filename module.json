@@ -1,0 +1,20 @@
+{
+  "id": "ptr-fusion-maker",
+  "title": "PTR Fusion Maker",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "11",
+    "verified": "11"
+  },
+  "description": "Allows creating fusion Pokemon similar to Pokemon Infinite Fusion. Has other features such as automatically retrieving sprites and generating PokeDex descriptions using OpenAI.",
+  "authors": [
+    {
+      "name": "Syber",
+      "discord": "Syberic",
+      "flags": {}
+    }
+  ],
+  "esmodules": [
+    "scripts/fusion-main.js"
+  ]
+}
