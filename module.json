@@ -16,5 +16,8 @@
   ],
   "esmodules": [
     "scripts/fusion-main.js"
-  ]
+  ],
+  "url": "https://github.com/Syberic/ptr-fusion-maker",
+  "manifest": "https://github.com/Syberic/ptr-fusion-maker/releases/latest/download/module.json",
+	"download": "https://github.com/Syberic/ptr-fusion-maker/releases/download/v1.0/module.zip"
 }
