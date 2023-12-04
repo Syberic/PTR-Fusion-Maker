@@ -1,4 +1,5 @@
 import pkmn from "../resources/pokemonDictionary.json" assert { type: "json" };
+import { getDir } from "./utils.js";
 
 export class ImageTools {
     static customSpriteURL = "custom-fusion-sprites-main/CustomBattlers/";
@@ -10,7 +11,7 @@ export class ImageTools {
         let resp = await fetch(`${ImageTools.proxyURL}${url}`);
         let blob = await resp.blob();
         let file = new File([blob], `${dexNumber}.webp`);
-        let directory = await game.settings.get("ptu", "generation.defaultImageDirectory"); // Change this later maybe.
+        let directory = getDir();
         await FilePicker.upload("data", `./${directory}`, file);
         await ImageTools.createShinyImage(blob, `./${directory}`, `${dexNumber}s.webp`);
     }
