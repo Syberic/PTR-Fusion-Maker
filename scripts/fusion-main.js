@@ -1,21 +1,21 @@
 import { ImageTools } from "./image-tools.js";
 import { FusionHandler } from "./fusion-handler.js";
 import pkmn from "../resources/pokemonDictionary.json" assert { type: "json" };
+import ResetDexApp from "./reset-dex-app.js";
 
 Hooks.on("init", () => {
+    
     // Settings
 
     // Sprite Folder
-    /*
     game.settings.register('ptr-fusion-maker', 'imageDirectory', {
-        name: 'Default Image Directory',
-        hint: 'The default directory to look for and create images in. Defaults to a directory specifically for this module.',
+        name: 'Image Directory',
+        hint: "The directory to look for and create images in. If empty images will be made in PTR's default directory.",
         scope: 'world',
         config: true,
         type: String,
-        default: "fusionSprites/"
+        default: ""
     });
-    */
 
     // OpenAI Key
     /*
@@ -46,7 +46,7 @@ Hooks.on("init", () => {
         config: false,
         type: Number,
         default: 6000
-    })
+    });
 
     // Starting Dex Number
     game.settings.register('ptr-fusion-maker', 'dexNumber', {
@@ -58,6 +58,84 @@ Hooks.on("init", () => {
         default: 6000,
         onChange: (value) => game.settings.set('ptr-fusion-maker', 'dexNumberCurrent', value)
     });
+
+    game.settings.registerMenu("ptr-fusion-maker", "dexReset", {
+        name: "Reset Current Dex Number",
+        label: "Reset Dex Number",
+        hint: "Resets the current Pokedex number for fusion pokemon to the current starting value.",
+        type: ResetDexApp,
+        restricted: true
+    });
+
+    // Modify PTU to make use of the directory if available.
+    
+    CONFIG.PTU.Item.documentClasses.species.prototype.getImagePath = async function ({ gender = game.i18n.localize("PTU.Male"), shiny = false, extension = game.settings.get("ptu", "generation.defaultImageExtension"), suffix = "" }={}) {
+        let path = game.settings.get('ptr-fusion-maker', 'imageDirectory');
+        const useName = game.settings.get("ptu", "generation.defaultPokemonImageNameType");
+        const femaleTag = gender.toLowerCase() == "female" ? "f" : "";
+        const shinyTag = shiny ? "s" : "";
+
+        let fullPath = `${path.startsWith('/') ? "" : "/"}${path}${path.endsWith('/') ? "" : "/"}${useName ? this.slug : Handlebars.helpers.lpad(this.system.number, 3, 0)}${femaleTag}${shinyTag}${this.system.form ? ("_" + this.system.form) : ""}${suffix ?? ""}${extension.startsWith('.') ? "" : "."}${extension}`;
+        let result = await fetch(fullPath);
+        if (result.status != 404) return fullPath;
+
+        path = game.settings.get("ptu", "generation.defaultImageDirectory");
+
+        return `${path.startsWith('/') ? "" : "/"}${path}${path.endsWith('/') ? "" : "/"}${useName ? this.slug : Handlebars.helpers.lpad(this.system.number, 3, 0)}${femaleTag}${shinyTag}${this.system.form ? ("_" + this.system.form) : ""}${suffix ?? ""}${extension.startsWith('.') ? "" : "."}${extension}`;
+    }
+    
+    game.ptu.species.generator.getImage = async function (species, { gender = game.i18n.localize("PTU.Male"), shiny = false, extension = game.settings.get("ptu", "generation.defaultImageExtension"), suffix = "" } = {}) {
+        // Check for default
+        let path = await species.getImagePath({ gender, shiny, extension, suffix });
+        let result = await fetch(path)
+        if (result.status != 404) return path;
+
+        // Default with webp
+        path = await species.getImagePath({ gender, shiny, extension: "webp", suffix });
+        result = await fetch(path);
+        if (result.status != 404) return path;
+
+        // look for male images
+        if (gender != game.i18n.localize("PTU.Male")) {
+            // Check default with Male
+            path = await species.getImagePath({ shiny, suffix });
+            result = await fetch(path);
+            if (result.status != 404) return path;
+
+            // Male with webp
+            path = await species.getImagePath({ shiny, extension: "webp", suffix });
+            result = await fetch(path);
+            if (result.status != 404) return path;
+        }
+
+        //look for non-shiny images
+        if (shiny) {
+            path = await species.getImagePath({ gender, suffix });
+            result = await fetch(path)
+            if (result.status != 404) return path;
+
+            path = await species.getImagePath({ gender, extension: "webp", suffix });
+            result = await fetch(path);
+            if (result.status != 404) return path;
+
+            //look for male non-shiny images
+            if (gender != game.i18n.localize("PTU.Male")) {
+                path = await species.getImagePath({ suffix });
+                result = await fetch(path);
+                if (result.status != 404) return path;
+        
+                path = await species.getImagePath({ extension: "webp", suffix });
+                result = await fetch(path);
+                if (result.status != 404) return path;
+            }
+        }
+
+        //all again but ignoring the custom suffix
+        if (suffix) return await this.getImage(species, {gender, shiny, extension});
+
+        return undefined;
+    }
+    
 });
 
 function fuserDialogue () {
