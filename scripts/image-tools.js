@@ -1,11 +1,16 @@
-import pkmn from "../resources/pokemonDictionary.json" assert { type: "json" };
-import { getDir } from "./utils.js";
+import { getDir, delay } from "./utils.js";
+import ImageSelector from "./apps/image-selector.js";
 
 export class ImageTools {
     static customSpriteURL = "custom-fusion-sprites-main/CustomBattlers/";
     static generatedSpriteURL = "autogen-fusion-sprites-master/Battlers/";
     static baseURL = "https://fusioncalc.com/wp-content/themes/twentytwentyone/pokemon/";
+    static daenaURL = "https://if.daena.me/";
     static proxyURL = "https://corsproxy.io/?";
+
+    static async getImageSelection (head, body, pkmn) {
+        new ImageSelector(head, body, await ImageTools.getSpriteURLs(pkmn[head], pkmn[body])).render(true);
+    }
     
     static async downloadImage (url, dexNumber) {
         let resp = await fetch(`${ImageTools.proxyURL}${url}`);
@@ -24,22 +29,6 @@ export class ImageTools {
             return true;
         else
             return false;
-    }
-
-    static getSpriteURL (p1, p2) {
-        let customFound = true;
-        // Attempt Custom
-        let url = `${ImageTools.baseURL}${ImageTools.customSpriteURL}${pkmn[p1]}.${pkmn[p2]}.png`;
-        if (!ImageTools.urlExists(url)) {
-            customFound = false;
-            // Attempt regular
-            url = `${ImageTools.baseURL}${ImageTools.generatedSpriteURL}${pkmn[p1]}/${pkmn[p1]}.${pkmn[p2]}.png`;
-        }
-        if (!ImageTools.urlExists(url)) {
-            // Default
-            url = `${ImageTools.baseURL}question.png`;
-        }
-        return [url, customFound];
     }
 
     static rgbToHSL (r, g, b) {
@@ -107,5 +96,22 @@ export class ImageTools {
                 FilePicker.upload("data", folder, newFile);
             });
         }
+    }
+
+    static async getSpriteURL (p1, p2) {
+        return (await ImageTools.getSpriteURLs(p1, p2))[0];
+    }
+
+    static async getSpriteURLs (p1, p2) {
+        const html = await (await fetch(`${ImageTools.proxyURL}${ImageTools.daenaURL}${p1}.${p2}/`)).text();
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const imgElements = doc.querySelectorAll('img');
+        const imageUrls = Array.from(imgElements).map(img => img.src);
+        return imageUrls.slice(0, -4);
+    }
+
+    static async getPageHTML (url) {
+        const html = await (await fetch(`${ImageTools.proxyURL}${ImageTools.daenaURL}`)).text();
+        return new DOMParser().parseFromString(html, 'text/html');
     }
 }

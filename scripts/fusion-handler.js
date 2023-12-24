@@ -1,27 +1,21 @@
 import { ImageTools } from "./image-tools.js";
 import capabilitiesTypes from "../resources/capabilitiesTypes.json" assert { type: "json" };
 import { merge } from "./utils.js";
+import ImageSelector from "./apps/image-selector.js";
 
 export class FusionHandler {
 
-    static async fusePokemon (html, invert, pkmn) {
-        // Grab the given inputs.
-        let head = html[0].querySelector('[id="p1"]').value;
-        let body = html[0].querySelector('[id="p2"]').value;
-        // Determine which one to do.
-        if (invert) {
-            let temp = head;
-            head = body;
-            body = temp;
-        }
+    static async fusePokemon (head, body, url) {
         // Grab the newest available dex number. This will always append to the end, so if there is a gap in dex numbers
         // it will not fill it. Might have to go back to old methods.
         let dexNumber = await game.settings.get('ptr-fusion-maker','dexNumberCurrent');
+
         // Checks if the file already exists, later on want to implement a way to 'cache' a file for a species,
         // so that way this code has more use behind it.
-        let url = ImageTools.getSpriteURL(head, body)[0];
         await ImageTools.downloadImage(url, dexNumber);
         await this.createSpeciesEntry(head, body, dexNumber);
+
+        // Notify user.
         ui.notifications.info("Fusion Pokemon is done!", {permanent: true});
     }
     
@@ -108,6 +102,11 @@ export class FusionHandler {
 
     // May need handling for evolutions (even if decided to not incorporate evolutions)
     static async createSpeciesEntry (head, body, dexNumber) {
+        // Fix specific for Deoxys
+        if (head == "Deoxys")
+            head += "-normal"
+        if (body == "Deoxys")
+            body += "-normal"
         head = await game.ptu.item.get(head, "species");
         body = await game.ptu.item.get(body, "species");
         ui.notifications.warn("Creating Fusion Pokemon. Please wait...", {permanent: true});

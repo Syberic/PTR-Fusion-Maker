@@ -1,0 +1,64 @@
+<style type="text/css">
+    .selector-container {
+        width: 540px!important;
+        height: 485px!important;
+        padding-bottom: 15px!important;
+    }
+
+    .selector-cell {
+        width: 240px;
+        margin-left: 18px;
+        margin-top: 15px;
+        box-sizing: border-box;
+        display: inline-block;
+    }
+
+    .selector-cell img {
+        width: 100%;
+        border: 1px solid;
+    }
+
+    .selector-cell input {
+        width: 99.5%;
+        padding: 0px;
+        margin: 0px;
+        text-align: center;
+    }
+
+    .selector-cell button {
+        width: 100%;
+        display: block;
+    }
+
+    .text-container {
+        margin-left: 19px;
+        width: 480px;
+    }
+</style>
+
+<form class="selector-container">
+    <div class="selector-cell">
+        <img src="{{defaultImage}}" id="pkmn-image1" />
+        <input list="dlPkmn" id="p1" name="p1" value="{{initialValue}}"/>
+    </div>
+    <div class="selector-cell">
+        <img src="{{defaultImage}}" id="pkmn-image2" />
+        <input list="dlPkmn" id="p2" name="p2" value="{{initialValue}}"/>
+    </div>
+    <div class="text-container">
+        <p>Input the names of two Pokemon above that are valid for Infinite Fusion.</p>
+        <p>Fusions with a green background indicate those with unique sprites.</p>
+        <p>Content not possible without the work of spriters in the Infinite Fusion community; and the <a href="https://if.daena.me/about/">FusionDex</a>.</p>
+    </div>
+    <div class="selector-cell">
+        <button value="left">Left</button>
+    </div>
+    <div class="selector-cell">
+        <button value="right">Right</button>
+    </div>
+    <datalist id="dlPkmn">
+        {{#each options}}
+            <option value="{{this}}" />
+        {{/each}}
+    </datalist>
+</form>

@@ -12,3 +12,9 @@ export function getDir () {
     if (result === "") result = game.settings.get('ptu', 'generation.defaultImageDirectory');
     return result;
 }
+
+export function delay(milliseconds){
+    return new Promise(resolve => {
+        setTimeout(resolve, milliseconds);
+    });
+}
