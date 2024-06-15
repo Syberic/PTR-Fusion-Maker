@@ -2,32 +2,33 @@ name: Module Builder
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Install jq
+        run: sudo apt-get install jq
+      
+      - name: Update module.json
+        shell: bash
+        run: jq --arg key version --arg value 1.1.1 '(.[$key]) = $value' module.json > tmp.json && mv tmp.json module.json
 
-      - name: Zip Files
+      - name: Create Zip File
         working-directory: ./
         run: zip -r ./module.zip ./*
-      
-      - name: Get Version
-        shell: bash
-        id: get-version
-        run: echo "version=$(node ./.github/workflows/get-version.js)" >> $GITHUB_OUTPUT
 
       - name: Create Release
         id: create-release
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          name: Release ${{ steps.get-version.outputs.version }}
+          name: Release ${{github.ref_name}}
           draft: false
           prerelease: false
           token: ${{secrets.GITHUB_TOKEN}}
           artifacts: './module.zip, ./module.json'
-          tag: ${{ steps.get-version.outputs.version }}
+          tag: ${{github.ref_name}}
