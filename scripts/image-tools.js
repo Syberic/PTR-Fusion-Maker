@@ -5,7 +5,7 @@ export class ImageTools {
     static customSpriteURL = "custom-fusion-sprites-main/CustomBattlers/";
     static generatedSpriteURL = "autogen-fusion-sprites-master/Battlers/";
     static baseURL = "https://fusioncalc.com/wp-content/themes/twentytwentyone/pokemon/";
-    static daenaURL = "https://if.daena.me/";
+    static daenaURL = "https://www.fusiondex.org/";
     static proxyURL = "https://corsproxy.io/?";
 
     static async getImageSelection (head, body, pkmn) {

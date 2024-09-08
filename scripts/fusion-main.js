@@ -1,6 +1,6 @@
 import { ImageTools } from "./image-tools.js";
 import { FusionHandler } from "./fusion-handler.js";
-import pokemonList from "../resources/pokemonDictionary.json" assert { type: "json" };
+import pokemonList from "../resources/pokemonDictionary.js";
 import ResetDexApp from "./apps/reset-dex-app.js";
 
 import ImageSelector from "./apps/image-selector.js";
@@ -22,18 +22,6 @@ Hooks.on("init", () => {
         type: String,
         default: "systems/ptu/static/images/sprites/"
     });
-
-    // OpenAI Key
-    /*
-    game.settings.register('ptr-fusion-maker', 'openaiKey', {
-        name: 'OpenAI Key',
-        hint: 'Your OpenAI Key for generation. If blank this feature goes unused. Ensure that you and only you have access to these configuration settings. If your key leaks, its your fault.',
-        scope: 'world',
-        config: true,
-        type: String,
-        default: ""
-    });
-    */
 
     // Default Description
     game.settings.register('ptr-fusion-maker', 'defaultDescription', {

@@ -1,5 +1,5 @@
 import { ImageTools } from "./image-tools.js";
-import capabilitiesTypes from "../resources/capabilitiesTypes.json" assert { type: "json" };
+import capabilitiesTypes from "../resources/capabilitiesTypes.js";
 import { merge } from "./utils.js";
 import ImageSelector from "./apps/image-selector.js";
 

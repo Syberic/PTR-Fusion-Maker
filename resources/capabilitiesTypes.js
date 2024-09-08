@@ -1,4 +1,4 @@
-{
+export default {
     "alluring": "body",
     "amorphos": "body",
     "aura pulse": "head",

@@ -8,7 +8,7 @@ class FusionSelector extends FormApplication {
     }
 
     static get defaultOptions() {
-        return mergeObject(super.defaultOptions, {
+        return foundry.utils.mergeObject(super.defaultOptions, {
             classes: ['form'],
             popOut: true,
             template: `modules/ptr-fusion-maker/templates/fusionSelector.hbs`,
